@@ -42,20 +42,25 @@ fdot   = -pdot/(period**2)
 #energy = 0.5*pdot**2 + potential(period)
 #print(energy)
 print(period, pdot)
-#print(freq,fdot)
 
 
+# get initial value of Pddot
+pddot = get_force(period) 
+
+# evolve through P-Pdot space
 for i in range(1,1000000):
-    pddot = get_force(period)
-#    print(period, pdot, pddot)
-    # increment period
-    period = period + pdot*tstep + 0.5*pddot*tstep**2 
-#    print(pdot*tstep, 0.5*pddot*tstep**2, period)
-    # increment Pdot
-#    pdot = np.sqrt(2.0*(energy - potential(period)))
-    pdot = pdot + pddot*tstep
+    # Here, we will do a kick-drift-kick, 
+    # i.e. a simplectic integration
+    #
+    # Kick
+    pdot = pdot + 0.5*pddot*tstep
+    # Drift
+    period = period + pdot*tstep
+    # Kick
+    ppdot = get_force(period)
+    pdot = pdot + 0.5*pddot*tstep
     print(period, pdot, pddot, i*tstep/86400.0/365)
-#    fdot = -K*f**(-3)
+
 
 
 
